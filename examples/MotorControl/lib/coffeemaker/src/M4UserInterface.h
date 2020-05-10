@@ -3,7 +3,6 @@
 
 #include "UserInterface.h"
 #include "coffeemaker.h"
-
 namespace M4CoffeeMaker {
 using namespace CoffeeMaker;
 struct M4UserInterface : UserInterface {
@@ -27,5 +26,5 @@ struct M4UserInterface : UserInterface {
   }
 };
 
-}  // namespace CoffeeMaker
+}  // namespace M4CoffeeMaker
 #endif  // !M4_USER_INTERFACE_HEADER

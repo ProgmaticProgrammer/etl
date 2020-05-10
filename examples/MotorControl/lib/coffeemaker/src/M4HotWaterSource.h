@@ -18,11 +18,6 @@ struct M4HotWaterSource : HotWaterSource {
     return status == BoilerStatus::NOT_EMPTY;
   }
 
-  void Start() override {
-    api_.SetReliefValveState(ReliefValveState::CLOSED);
-    api_.SetBoilerState(BoilerState::ON);
-  }
-
   void StartBrewing() override {
     api_.SetReliefValveState(ReliefValveState::CLOSED);
     api_.SetBoilerState(BoilerState::ON);

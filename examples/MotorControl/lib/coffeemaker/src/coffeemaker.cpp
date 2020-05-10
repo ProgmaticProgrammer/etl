@@ -11,7 +11,7 @@ namespace CoffeeMaker {
  * sensor. This sensor detects the presence of the pot
  * and whether it has coffee in it.
  */
-WarmerPlateStatus CoffeeMakerAPI::GetWarmerPlateStatus() {
+WarmerPlateStatus CoffeeMakerAPI::GetWarmerPlateStatus() const {
   cout << "CoffeeMakerAPI::GetWarmerPlateStatus() called!" << endl;
   return WarmerPlateStatus::POT_EMPTY;
 }
@@ -20,7 +20,7 @@ WarmerPlateStatus CoffeeMakerAPI::GetWarmerPlateStatus() {
  * The boiler switch is a float switch that detects if
  * there is more than 1/2 cup of water in the boiler.
  */
-BoilerStatus CoffeeMakerAPI::GetBoilerStatus() {
+BoilerStatus CoffeeMakerAPI::GetBoilerStatus() const {
   cout << "CoffeeMakerAPI::GetBoilerStatus() called!" << endl;
   return BoilerStatus::EMPTY;
 }
@@ -35,7 +35,7 @@ BoilerStatus CoffeeMakerAPI::GetBoilerStatus() {
  * rate, it will still detect when the brew button is
  * pushed.
  */
-BrewButtonStatus CoffeeMakerAPI::GetBrewButtonStatus() {
+BrewButtonStatus CoffeeMakerAPI::GetBrewButtonStatus() const {
   cout << "CoffeeMakerAPI::GetBrewButtonStatus() called!" << endl;
   return BrewButtonStatus::NOT_PUSHED;
 }
