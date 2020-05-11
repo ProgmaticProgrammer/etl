@@ -14,23 +14,16 @@ struct M4HotWaterSource : HotWaterSource {
   M4HotWaterSource(CoffeeMakerAPI& api) : api_(api) {}
 
   bool IsReady() const override {
-    BoilerStatus status = api_.GetBoilerStatus();
-    return status == BoilerStatus::NOT_EMPTY;
+    return api_.GetBoilerStatus() == BoilerStatus::NOT_EMPTY;
   }
 
-  void StartBrewing() override {
-    api_.SetReliefValveState(ReliefValveState::CLOSED);
-    api_.SetBoilerState(BoilerState::ON);
-  }
+  void StartBrewing() override { Resume(); }
 
   void Poll() {
     BoilerStatus boilerStatus = api_.GetBoilerStatus();
-    if (isBrewing_) {
-      if (boilerStatus == BoilerStatus::EMPTY) {
-        api_.SetBoilerState(BoilerState::OFF);
-        api_.SetReliefValveState(ReliefValveState::CLOSED);
-        DeclareDone();
-      }
+    if (isBrewing_ && !IsReady()) {
+      Pause();
+      DeclareDone();
     }
   }
 
@@ -45,5 +38,5 @@ struct M4HotWaterSource : HotWaterSource {
   }
 };
 
-}  // namespace CoffeeMaker
+}  // namespace M4CoffeeMaker
 #endif  //! M4_HOT_WATER_SOURCE_HEADER

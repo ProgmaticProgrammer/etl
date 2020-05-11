@@ -17,7 +17,9 @@ class HotWaterSource {
 
  protected:
   bool isBrewing_ = false;
-
+  virtual void StartBrewing() = 0;
+  void DeclareDone();
+  void Done() { isBrewing_ = false; }
  public:
   void Init(const shared_ptr<UserInterface>& ui,
             const shared_ptr<ContainmentVessel>& cv) {
@@ -27,16 +29,13 @@ class HotWaterSource {
 
  public:
   virtual bool IsReady() const = 0;
-  virtual void StartBrewing() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
 
-  virtual void Start() {
+  void Start() {
     isBrewing_ = true;
     StartBrewing();
   }
-  void Done() { isBrewing_ = false; }
-  void DeclareDone();
 };
 
 }  // namespace CoffeeMaker

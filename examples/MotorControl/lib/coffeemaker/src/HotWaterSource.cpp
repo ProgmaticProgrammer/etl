@@ -8,6 +8,6 @@ void HotWaterSource::DeclareDone() {
   if (spui) spui->Done();
   auto spcv = cv_.lock();
   if (spcv) spcv->Done();
-  isBrewing_ = false;
+  Done();
 }
 }  // namespace CoffeeMaker

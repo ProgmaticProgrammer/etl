@@ -17,28 +17,25 @@ class UserInterface {
   weak_ptr<ContainmentVessel> cv_;
 
  protected:
-  bool isComplete = true;
+  bool isComplete_ = true;
+  virtual void CompleteCycle() = 0;
+  void StartBrewing();
 
  public:
-  UserInterface() : isComplete(true) {}
+  UserInterface() : isComplete_(true) {}
 
   void Init(const shared_ptr<HotWaterSource>& hws,
             const shared_ptr<ContainmentVessel>& cv) {
     hws_ = hws;
     cv_ = cv;
   }
-
- public:
+  // done is when hotwatersource runs out of water
   virtual void Done() = 0;
-  virtual void CompleteCycle() = 0;
-
- public:
+  // complete is when all coffee in containmentvessel consumed
   void Complete() {
-    isComplete = true;
+    isComplete_ = true;
     CompleteCycle();
   }
-
-  void StartBrewing();
 };
 }  // namespace CoffeeMaker
 

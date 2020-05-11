@@ -41,7 +41,6 @@ struct M4ContainmentVessel : ContainmentVessel {
     WarmerPlateStatus status = api_.GetWarmerPlateStatus();
     return status == WarmerPlateStatus::POT_EMPTY;
   }
-  void Start() override { isBrewing_ = true; }
 
   void Poll() {
     WarmerPlateStatus potStatus = api_.GetWarmerPlateStatus();

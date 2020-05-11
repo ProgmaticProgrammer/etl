@@ -123,14 +123,13 @@ void test_StartNoWater(void) {
 }
 
 void test_GoodStart(void) {
-  api.boilerEmpty = false;
-  api.buttonPressed = true;
-  Poll();
+  NormalStart();
   TEST_ASSERT_TRUE(api.boilerOn);
   TEST_ASSERT_FALSE(api.lightOn);
   TEST_ASSERT_FALSE(api.plateOn);
   TEST_ASSERT_TRUE(api.valveClosed);
 }
+
 ///////////////////////////
 // setup and test entry //
 /////////////////////////

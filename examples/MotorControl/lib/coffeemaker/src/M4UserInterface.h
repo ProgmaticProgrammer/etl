@@ -1,5 +1,6 @@
 #ifndef M4_USER_INTERFACE_HEADER
 #define M4_USER_INTERFACE_HEADER
+#include <iostream>
 
 #include "UserInterface.h"
 #include "coffeemaker.h"
@@ -20,9 +21,15 @@ struct M4UserInterface : UserInterface {
   void Poll() { CheckButton(); }
 
  public:
-  virtual void Done() override { api_.SetIndicatorState(IndicatorState::ON); }
+  virtual void Done() override {
+    api_.SetIndicatorState(IndicatorState::ON);
+    std::cout << "SetIndicatorState::on" << std::endl;
+  }
+
+ protected:
   virtual void CompleteCycle() override {
     api_.SetIndicatorState(IndicatorState::OFF);
+    std::cout << "SetIndicatorState::off" << std::endl;
   }
 };
 
