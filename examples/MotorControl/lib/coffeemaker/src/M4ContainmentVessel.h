@@ -1,45 +1,56 @@
 #ifndef M4_CONTAINMENT_VESSEL_HEADER
 #define M4_CONTAINMENT_VESSEL_HEADER
 
+#include <iostream>
+
 #include "ContainmentVessel.h"
 #include "coffeemaker.h"
-
 namespace M4CoffeeMaker {
 using namespace CoffeeMaker;
 struct M4ContainmentVessel : ContainmentVessel {
  private:
   CoffeeMakerAPI& api_;
   WarmerPlateStatus lastPotStatus = WarmerPlateStatus::POT_EMPTY;
-  bool isBrewing_ = false;
 
   void HandleBrewingEvent(WarmerPlateStatus potStatus) {
-    if (potStatus == WarmerPlateStatus::POT_NOT_EMPTY) {
-      ContainerAvailable();
-      api_.SetWarmerState(WarmerState::ON);
-    } else if (potStatus == WarmerPlateStatus::WARMER_EMPTY) {
-      ContainerUnavailable();
-      api_.SetWarmerState(WarmerState::OFF);
-    } else {  // potStatus == POT_EMPTY
-      ContainerAvailable();
-      api_.SetWarmerState(WarmerState::OFF);
+    switch (potStatus) {
+      case WarmerPlateStatus::WARMER_EMPTY:
+        ContainerUnavailable();
+        api_.SetWarmerState(WarmerState::OFF);
+        break;
+      case WarmerPlateStatus::POT_NOT_EMPTY:
+        ContainerAvailable();
+        api_.SetWarmerState(WarmerState::ON);
+        break;
+      case WarmerPlateStatus::POT_EMPTY:
+        ContainerAvailable();
+        api_.SetWarmerState(WarmerState::OFF);
+        break;
+      default:
+        break;
     }
   }
   void HandleIncompleteEvent(WarmerPlateStatus potStatus) {
-    if (potStatus == WarmerPlateStatus::POT_NOT_EMPTY) {
-      api_.SetWarmerState(WarmerState::ON);
-    } else if (potStatus == WarmerPlateStatus::WARMER_EMPTY) {
-      api_.SetWarmerState(WarmerState::OFF);
-    } else {  // potStatus == POT_EMPTY
-      api_.SetWarmerState(WarmerState::OFF);
-      DeclareComplete();
+    switch (potStatus) {
+      case WarmerPlateStatus::POT_NOT_EMPTY:
+        api_.SetWarmerState(WarmerState::ON);
+        break;
+      case WarmerPlateStatus::WARMER_EMPTY:
+        api_.SetWarmerState(WarmerState::OFF);
+        break;
+      case WarmerPlateStatus::POT_EMPTY:
+        api_.SetWarmerState(WarmerState::OFF);
+        DeclareComplete();
+        break;
+      default:
+        break;
     }
   }
 
  public:
   M4ContainmentVessel(CoffeeMakerAPI& api) : api_(api) {}
   bool IsReady() const override {
-    WarmerPlateStatus status = api_.GetWarmerPlateStatus();
-    return status == WarmerPlateStatus::POT_EMPTY;
+    return api_.GetWarmerPlateStatus() == WarmerPlateStatus::POT_EMPTY;
   }
 
   void Poll() {

@@ -72,9 +72,9 @@ auto hws = make_shared<M4HotWaterSource>(api);
 auto cv = make_shared<M4ContainmentVessel>(api);
 
 void Poll() {
-  ui->Poll();
   hws->Poll();
   cv->Poll();
+  ui->Poll();
 }
 void Reset() {
   api.buttonPressed = false;
@@ -130,6 +130,15 @@ void test_GoodStart(void) {
   TEST_ASSERT_TRUE(api.valveClosed);
 }
 
+void test_StartedPotNotEmpty() {
+  NormalStart();
+  api.potNotEmpty = true;
+  Poll();
+  TEST_ASSERT_TRUE(api.boilerOn);
+  TEST_ASSERT_FALSE(api.lightOn);
+  TEST_ASSERT_TRUE(api.plateOn);
+  TEST_ASSERT_TRUE(api.valveClosed);
+}
 ///////////////////////////
 // setup and test entry //
 /////////////////////////
@@ -146,6 +155,7 @@ int test_main(int argc, char** argv) {
   RUN_TEST(test_StartNoPot);
   RUN_TEST(test_StartNoWater);
   RUN_TEST(test_GoodStart);
+  RUN_TEST(test_StartedPotNotEmpty);
   return UNITY_END();
 }
 }  // namespace CoffeeMakerTest

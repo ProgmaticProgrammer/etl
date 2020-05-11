@@ -1,5 +1,6 @@
 #ifndef M4_HOT_WATER_SOURCE_HEADER
 #define M4_HOT_WATER_SOURCE_HEADER
+#include <iostream>
 
 #include "HotWaterSource.h"
 #include "coffeemaker.h"
@@ -9,6 +10,7 @@ using namespace CoffeeMaker;
 struct M4HotWaterSource : HotWaterSource {
  private:
   CoffeeMakerAPI& api_;
+  BoilerStatus lastBoilerStatus = BoilerStatus::EMPTY;
 
  public:
   M4HotWaterSource(CoffeeMakerAPI& api) : api_(api) {}
@@ -20,10 +22,27 @@ struct M4HotWaterSource : HotWaterSource {
   void StartBrewing() override { Resume(); }
 
   void Poll() {
-    BoilerStatus boilerStatus = api_.GetBoilerStatus();
-    if (isBrewing_ && !IsReady()) {
-      Pause();
-      DeclareDone();
+    // std::cout << "M4HotWaterSource.Poll" << std::endl;
+    // if (isBrewing_)
+    //   std::cout << "isBrewing_" << std::endl;
+    // else
+    //   std::cout << "notBrewing_" << std::endl;
+    // if (IsReady())
+    //   std::cout << "IsReady" << std::endl;
+    // else
+    //   std::cout << "notsReady" << std::endl;
+
+    if (isBrewing_) {  // brewing
+      BoilerStatus boilerStatus = api_.GetBoilerStatus();
+      if (boilerStatus != lastBoilerStatus) {
+        if (lastBoilerStatus == BoilerStatus::NOT_EMPTY &&
+            boilerStatus == BoilerStatus::EMPTY) {  // hot water all gone
+          api.SetBoilerState(BoilerState::OFF);
+          api.SetReliefValveState(ReliefValveState::CLOSED);
+          DeclareDone();
+        }
+        lastBoilerStatus = boilerStatus;
+      }
     }
   }
 
