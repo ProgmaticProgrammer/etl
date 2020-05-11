@@ -1,10 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
+    "\\examples",
+    "\\examples\\QueuedFSM",
     "\\include\\etl",
     "\\test"
   ],
-  "SelectedNode": "\\test\\test_to_string.cpp",
+  "SelectedNode": "\\test\\test_fsm.cpp",
   "PreviewInSolutionExplorer": false
 }

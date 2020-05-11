@@ -25,7 +25,7 @@ void test_WhenInitialized_ThenNotStarted(void) {
   TEST_ASSERT_FALSE(motorControl.is_started());
 }
 
-void test_WhenStarted_ThenIsStarted(void) {
+void test_WhenStarted_ThenIsIdle(void) {
   motorControl.start(false);
   TEST_ASSERT_TRUE(motorControl.is_started());
 
@@ -45,7 +45,7 @@ void test_WhenStarted_ThenIsStarted(void) {
 int main(int argc, char** argv) {
   UNITY_BEGIN();
   RUN_TEST(test_WhenInitialized_ThenNotStarted);
-  RUN_TEST(test_WhenStarted_ThenIsStarted);
+  RUN_TEST(test_WhenStarted_ThenIsIdle);
   UNITY_END();
 
   return 0;

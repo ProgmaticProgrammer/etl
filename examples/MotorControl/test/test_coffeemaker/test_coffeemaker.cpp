@@ -16,11 +16,13 @@ using namespace M4CoffeeMaker;
 //     stub for test    //
 /////////////////////////
 struct CoffeeMakerStub : CoffeeMakerAPI {
-  mutable bool buttonPressed = false;
+  // testable variables
   bool lightOn = false;
   bool boilerOn = false;
   bool valveClosed = true;
   bool plateOn = false;
+  // controllable conditions
+  mutable bool buttonPressed = false;
   bool boilerEmpty = true;
   bool potPresent = true;
   bool potNotEmpty = false;
