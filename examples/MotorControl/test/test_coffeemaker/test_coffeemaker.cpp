@@ -139,6 +139,21 @@ void test_StartedPotNotEmpty() {
   TEST_ASSERT_TRUE(api.plateOn);
   TEST_ASSERT_TRUE(api.valveClosed);
 }
+void test_PotRemovedAndReplacedWhileEmpty() {
+  NormalStart();
+  api.potPresent = false;
+  Poll();
+  TEST_ASSERT_FALSE(api.boilerOn);
+  TEST_ASSERT_FALSE(api.lightOn);
+  TEST_ASSERT_FALSE(api.plateOn);
+  TEST_ASSERT_FALSE(api.valveClosed);
+  api.potPresent = true;
+  Poll();
+  TEST_ASSERT_TRUE(api.boilerOn);
+  TEST_ASSERT_FALSE(api.lightOn);
+  TEST_ASSERT_FALSE(api.plateOn);
+  TEST_ASSERT_TRUE(api.valveClosed);
+}
 ///////////////////////////
 // setup and test entry //
 /////////////////////////
@@ -156,6 +171,7 @@ int test_main(int argc, char** argv) {
   RUN_TEST(test_StartNoWater);
   RUN_TEST(test_GoodStart);
   RUN_TEST(test_StartedPotNotEmpty);
+  RUN_TEST(test_PotRemovedAndReplacedWhileEmpty);
   return UNITY_END();
 }
 }  // namespace CoffeeMakerTest

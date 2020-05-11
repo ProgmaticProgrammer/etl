@@ -37,8 +37,8 @@ struct M4HotWaterSource : HotWaterSource {
       if (boilerStatus != lastBoilerStatus) {
         if (lastBoilerStatus == BoilerStatus::NOT_EMPTY &&
             boilerStatus == BoilerStatus::EMPTY) {  // hot water all gone
-          api.SetBoilerState(BoilerState::OFF);
-          api.SetReliefValveState(ReliefValveState::CLOSED);
+          api_.SetBoilerState(BoilerState::OFF);
+          api_.SetReliefValveState(ReliefValveState::CLOSED);
           DeclareDone();
         }
         lastBoilerStatus = boilerStatus;

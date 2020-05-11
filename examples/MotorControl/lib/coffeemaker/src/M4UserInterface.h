@@ -23,13 +23,13 @@ struct M4UserInterface : UserInterface {
  public:
   virtual void Done() override {
     api_.SetIndicatorState(IndicatorState::ON);
-    std::cout << "SetIndicatorState::on" << std::endl;
+    // std::cout << "SetIndicatorState::on" << std::endl;
   }
 
  protected:
   virtual void CompleteCycle() override {
     api_.SetIndicatorState(IndicatorState::OFF);
-    std::cout << "SetIndicatorState::off" << std::endl;
+    // std::cout << "SetIndicatorState::off" << std::endl;
   }
 };
 
