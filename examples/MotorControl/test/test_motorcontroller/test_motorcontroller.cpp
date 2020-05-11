@@ -33,13 +33,13 @@ void test_WhenStarted_ThenIsIdle(void) {
   TEST_ASSERT_EQUAL(StateId::IDLE,
                     int(motorControl.get_state().get_state_id()));
 
-  TEST_ASSERT_FALSE(motorControl.isLampOn);
-  TEST_ASSERT_EQUAL(0, motorControl.setSpeedCount);
-  TEST_ASSERT_EQUAL(0, motorControl.speed);
-  TEST_ASSERT_EQUAL(0, motorControl.startCount);
-  TEST_ASSERT_EQUAL(0, motorControl.stopCount);
-  TEST_ASSERT_EQUAL(0, motorControl.stoppedCount);
-  TEST_ASSERT_EQUAL(0, motorControl.unknownCount);
+  TEST_ASSERT_FALSE(motorControl.isLampOn_);
+  TEST_ASSERT_EQUAL(0, motorControl.setSpeedCount_);
+  TEST_ASSERT_EQUAL(0, motorControl.speed_);
+  TEST_ASSERT_EQUAL(0, motorControl.startCount_);
+  TEST_ASSERT_EQUAL(0, motorControl.stopCount_);
+  TEST_ASSERT_EQUAL(0, motorControl.stoppedCount_);
+  TEST_ASSERT_EQUAL(0, motorControl.unknownCount_);
 }
 
 int main(int argc, char** argv) {

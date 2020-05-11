@@ -7,8 +7,6 @@
 #include "etl/packet.h"
 #include "etl/queue.h"
 
-const etl::message_router_id_t MOTOR_CONTROL = 0;
-
 //***************************************************************************
 // Events
 struct EventId {
@@ -24,10 +22,8 @@ struct EventId {
   ETL_END_ENUM_TYPE
 };
 
-//***********************************
 class Start : public etl::message<EventId::START> {};
 
-//***********************************
 class Stop : public etl::message<EventId::STOP> {
  public:
   Stop() : isEmergencyStop(false) {}
@@ -36,7 +32,6 @@ class Stop : public etl::message<EventId::STOP> {
   const bool isEmergencyStop;
 };
 
-//***********************************
 class SetSpeed : public etl::message<EventId::SET_SPEED> {
  public:
   SetSpeed(int speed_) : speed(speed_) {}
@@ -44,15 +39,12 @@ class SetSpeed : public etl::message<EventId::SET_SPEED> {
   const int speed;
 };
 
-//***********************************
 class Stopped : public etl::message<EventId::STOPPED> {};
 
-//***********************************
 class Recursive : public etl::message<EventId::RECURSIVE> {};
 
-//***********************************
 class Unsupported : public etl::message<EventId::UNSUPPORTED> {};
-
+// Events - end
 //***************************************************************************
 // States
 struct StateId {
@@ -69,37 +61,40 @@ struct StateId {
 //***********************************
 // The motor control FSM.
 //***********************************
+
+const etl::message_router_id_t MOTOR_CONTROL = 0;
+
 class MotorControl : public etl::fsm {
  public:
   MotorControl() : fsm(MOTOR_CONTROL) {}
 
-  //***********************************
+
   void Initialise(etl::ifsm_state** p_states, size_t size) {
     set_states(p_states, size);
     ClearStatistics();
   }
 
-  //***********************************
+
   void ClearStatistics() {
-    startCount = 0;
-    stopCount = 0;
-    setSpeedCount = 0;
-    unknownCount = 0;
-    stoppedCount = 0;
-    isLampOn = false;
-    speed = 0;
+    startCount_ = 0;
+    stopCount_ = 0;
+    setSpeedCount_ = 0;
+    unknownCount_ = 0;
+    stoppedCount_ = 0;
+    isLampOn_ = false;
+    speed_ = 0;
   }
 
-  //***********************************
-  void SetSpeedValue(int speed_) { speed = speed_; }
 
-  //***********************************
-  void TurnRunningLampOn() { isLampOn = true; }
+  void SetSpeedValue(int speed) { speed_ = speed; }
 
-  //***********************************
-  void TurnRunningLampOff() { isLampOn = false; }
 
-  //***********************************
+  void TurnRunningLampOn() { isLampOn_ = true; }
+
+
+  void TurnRunningLampOff() { isLampOn_ = false; }
+
+
   template <typename T>
   void queue_recursive_message(const T& message) {
     messageQueue.emplace(message);
@@ -112,13 +107,13 @@ class MotorControl : public etl::fsm {
 
   etl::queue<Packet_t, 2> messageQueue;
 
-  int startCount;
-  int stopCount;
-  int setSpeedCount;
-  int unknownCount;
-  int stoppedCount;
-  bool isLampOn;
-  int speed;
+  int startCount_ = 0;
+  int stopCount_ = 0;
+  int setSpeedCount_ = 0;
+  int unknownCount_ = 0;
+  int stoppedCount_ = 0;
+  bool isLampOn_ = false;
+  int speed_ = 0;
 };
 
 //***********************************
@@ -127,26 +122,26 @@ class MotorControl : public etl::fsm {
 class Idle : public etl::fsm_state<MotorControl, Idle, StateId::IDLE, Start,
                                    Recursive> {
  public:
-  //***********************************
+
   etl::fsm_state_id_t on_event(etl::imessage_router&, const Start&) {
-    ++get_fsm_context().startCount;
+    ++get_fsm_context().startCount_;
     return StateId::RUNNING;
   }
 
-  //***********************************
+
   etl::fsm_state_id_t on_event(etl::imessage_router&, const Recursive&) {
     get_fsm_context().queue_recursive_message(Start());
     return StateId::IDLE;
   }
 
-  //***********************************
+
   etl::fsm_state_id_t on_event_unknown(etl::imessage_router&,
                                        const etl::imessage&) {
-    ++get_fsm_context().unknownCount;
+    ++get_fsm_context().unknownCount_;
     return STATE_ID;
   }
 
-  //***********************************
+
   etl::fsm_state_id_t on_enter_state() {
     get_fsm_context().TurnRunningLampOff();
     return StateId::LOCKED;
@@ -159,9 +154,8 @@ class Idle : public etl::fsm_state<MotorControl, Idle, StateId::IDLE, Start,
 class Running : public etl::fsm_state<MotorControl, Running, StateId::RUNNING,
                                       Stop, SetSpeed> {
  public:
-  //***********************************
   etl::fsm_state_id_t on_event(etl::imessage_router&, const Stop& event) {
-    ++get_fsm_context().stopCount;
+    ++get_fsm_context().stopCount_;
 
     if (event.isEmergencyStop) {
       return StateId::IDLE;
@@ -170,21 +164,18 @@ class Running : public etl::fsm_state<MotorControl, Running, StateId::RUNNING,
     }
   }
 
-  //***********************************
   etl::fsm_state_id_t on_event(etl::imessage_router&, const SetSpeed& event) {
-    ++get_fsm_context().setSpeedCount;
+    ++get_fsm_context().setSpeedCount_;
     get_fsm_context().SetSpeedValue(event.speed);
     return STATE_ID;
   }
 
-  //***********************************
   etl::fsm_state_id_t on_event_unknown(etl::imessage_router&,
                                        const etl::imessage&) {
-    ++get_fsm_context().unknownCount;
+    ++get_fsm_context().unknownCount_;
     return STATE_ID;
   }
 
-  //***********************************
   etl::fsm_state_id_t on_enter_state() {
     get_fsm_context().TurnRunningLampOn();
 
@@ -198,16 +189,16 @@ class Running : public etl::fsm_state<MotorControl, Running, StateId::RUNNING,
 class WindingDown : public etl::fsm_state<MotorControl, WindingDown,
                                           StateId::WINDING_DOWN, Stopped> {
  public:
-  //***********************************
+
   etl::fsm_state_id_t on_event(etl::imessage_router&, const Stopped&) {
-    ++get_fsm_context().stoppedCount;
+    ++get_fsm_context().stoppedCount_;
     return StateId::IDLE;
   }
 
-  //***********************************
+
   etl::fsm_state_id_t on_event_unknown(etl::imessage_router&,
                                        const etl::imessage&) {
-    ++get_fsm_context().unknownCount;
+    ++get_fsm_context().unknownCount_;
     return STATE_ID;
   }
 };
@@ -217,10 +208,10 @@ class WindingDown : public etl::fsm_state<MotorControl, WindingDown,
 //***********************************
 class Locked : public etl::fsm_state<MotorControl, Locked, StateId::LOCKED> {
  public:
-  //***********************************
+
   etl::fsm_state_id_t on_event_unknown(etl::imessage_router&,
                                        const etl::imessage&) {
-    ++get_fsm_context().unknownCount;
+    ++get_fsm_context().unknownCount_;
     return STATE_ID;
   }
 };
